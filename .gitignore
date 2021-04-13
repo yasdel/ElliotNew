@@ -20,6 +20,7 @@ pip-selfcheck.json
 
 /results/
 /data/*
+!/data/movielens_100k
 !/data/cat_dbpedia_movielens_1m
 !/data/movielens_1m
 /share/
