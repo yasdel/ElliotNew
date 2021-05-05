@@ -8,6 +8,7 @@ __author__ = 'Felice Antonio Merra, Vito Walter Anelli, Claudio Pomo, Daniele Ma
 __email__ = 'felice.merra@poliba.it, vitowalter.anelli@poliba.it, claudio.pomo@poliba.it, daniele.malitesta@poliba.it'
 
 import numpy as np
+import csv
 from tqdm import tqdm
 
 from elliot.dataset.samplers import custom_sampler as cs
@@ -19,6 +20,16 @@ from elliot.utils.write import store_recommendation
 
 np.random.seed(42)
 
+def power_iteration(A, num_simulations: int):
+    b_k = np.random.rand(A.shape[1])
+    for _ in range(num_simulations):
+        # calculate the matrix-by-vector product Ab
+        b_k1 = np.dot(A, b_k)
+        # calculate the norm
+        b_k1_norm = np.linalg.norm(b_k1)
+        # re normalize the vector
+        b_k = b_k1 / b_k1_norm
+    return b_k
 
 class AMF(RecMixin, BaseRecommenderModel):
     r"""
@@ -72,6 +83,7 @@ class AMF(RecMixin, BaseRecommenderModel):
         self._params_list = [
             ("_factors", "factors", "factors", 200, int, None),
             ("_learning_rate", "lr", "lr", 0.001, None, None),
+            ("_gamma", "ga", "ga", 1, None, None),
             ("_l_w", "l_w", "l_w", 0.1, None, None),
             ("_l_b", "l_b", "l_b", 0.001, None, None),
             ("_eps", "eps", "eps", 0.1, None, None),
@@ -101,12 +113,20 @@ class AMF(RecMixin, BaseRecommenderModel):
                                     self._num_users,
                                     self._num_items)
 
-    @property
     def name(self):
         return "AMF" \
                + "_e:" + str(self._epochs) \
                + "_bs:" + str(self._batch_size) \
                + f"_{self.get_params_shortcut()}"
+
+    def get_user_factor_vector(self):
+        return self._Gu
+
+    def get_item_factor_vector(self):
+        return self._Gi
+
+    def scale_factors(self, v):
+        self._Gi /= v
 
     def train(self):
         if self._restore:
@@ -125,12 +145,44 @@ class AMF(RecMixin, BaseRecommenderModel):
                     t.set_postfix({'(APR)-loss' if user_adv_train else '(BPR)-loss': f'{loss.numpy() / steps:.5f}'})
                     t.update()
 
+            A = self._model.get_item_factor_vector()
+            C = np.matmul(A.transpose(), A)
+            # print(C.shape)
+            s1 = power_iteration(C, 20)
+            sn1 = np.sqrt(max(s1))
+            # print(sn1)
+
+            B = self._model.get_user_factor_vector()
+            D = np.matmul(B.transpose(), B)
+            # print(D.shape)
+            s2 = power_iteration(D, 20)
+            sn2 = np.sqrt(max(s2))
+            # print(sn2)
+
+            rho = max(sn1 / self._gamma, 1)
+            # print(rho)
+
+            # print(self._model.get_item_factors(1))
+            self._model.scale_factors(rho)
             if not (it + 1) % self._validation_rate:
                 recs = self.get_recommendations(self.evaluator.get_needed_recommendations())
                 result_dict = self.evaluator.eval(recs)
                 self._results.append(result_dict)
 
                 print(f'Epoch {(it + 1)}/{self._epochs} loss {loss  / steps:.3f}')
+
+                rows = [it + 1, self.name, self._factors, self._learning_rate, self._gamma, sn1, sn2]
+                rows.append(result_dict[10]['test_results']['nDCG'])
+
+                with open('results/AML_Lyp/APR_Lyapanov_ML_100k_allepochs_allgamma' + '.csv',
+                          'a') as f1:
+                    writer = csv.writer(f1, delimiter=',', lineterminator='\n')
+                    writer.writerow(rows)
+
+                if it + 1 == self._epochs:
+                    with open('results/AML_Lyp/APR_Lyapanov_ML_100k_finalepoch_allgamma' + '.csv', 'a') as f1:
+                        writer = csv.writer(f1, delimiter=',', lineterminator='\n')
+                        writer.writerow(rows)
 
                 if self._results[-1][self._validation_k]["val_results"][self._validation_metric] > best_metric_value:
                     print("******************************************")

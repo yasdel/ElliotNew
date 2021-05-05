@@ -54,6 +54,9 @@ class AMF_model(keras.Model):
         self._optimizer = tf.optimizers.Adam(self._learning_rate)
         #self.saver_ckpt = tf.train.Checkpoint(optimizer=self._optimizer, model=self)
 
+
+    @property
+
     # @tf.function
     def call(self, inputs, training=None):
         user, item = inputs

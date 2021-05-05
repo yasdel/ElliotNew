@@ -9,7 +9,7 @@ import os
 from elliot.run import run_experiment
 
 print("Done! We are now starting the Elliot's experiment")
-run_experiment("config_files/sample_hello_world.yml")
+run_experiment("config_files/sample_hello_world_new.yml")
 
 
 

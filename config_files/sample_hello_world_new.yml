@@ -1,0 +1,18 @@
+experiment:
+  dataset: movielens_100k
+  data_config:
+    strategy: dataset #fixed #train_path:test_path:
+    dataset_path:  ../data/AmazonDigMusic/ratings_Digital_Music.csv  #../data/movielens_100k/u.data  #../data/movielens_1m/dataset.tsv
+  splitting:
+    test_splitting:
+        strategy: random_subsampling
+        test_ratio: 0.2
+   # validation_splitting:
+   #      strategy: random_cross_validation
+   #      test_ratio: 0.25
+   #      folds: 4
+  top_k: [10]
+  evaluation:
+    simple_metrics: [nDCG]
+
+
