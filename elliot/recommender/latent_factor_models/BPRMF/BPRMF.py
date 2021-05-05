@@ -293,7 +293,7 @@ class BPRMF(RecMixin, BaseRecommenderModel):
                 rows = [it + 1, self.name , self._factors, self._learning_rate, self._gamma, sn1, sn2]
                 rows.append(result_dict[10]['test_results']['nDCG'])
 
-                with open('results/AML_Lyp/BPR_Lyapanov_AmazonOffice_allepochs_allgamma' + '.csv',
+                with open('results/AML_Lyp/BPR_Lyapanov_ML1M_allepochs_allgamma' + '.csv',
                           'a') as f1:
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                     writer.writerow(rows)
@@ -301,7 +301,7 @@ class BPRMF(RecMixin, BaseRecommenderModel):
 
                 if it+1 == self._epochs:
 
-                    with open('results/AML_Lyp/AML_RecSys_Lyapanov_AmazonOffice_finalepoch_allgamma' +'.csv', 'a') as f1:
+                    with open('results/AML_Lyp/AML_RecSys_Lyapanov_ML1M_finalepoch_allgamma' +'.csv', 'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
 
