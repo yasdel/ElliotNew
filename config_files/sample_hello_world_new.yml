@@ -2,7 +2,7 @@ experiment:
   dataset: movielens_100k
   data_config:
     strategy: dataset #fixed #train_path:test_path:
-    dataset_path:  ../data/AmazonDigMusic/ratings_Digital_Music.csv  #../data/movielens_100k/u.data  #../data/movielens_1m/dataset.tsv
+    dataset_path:  ../data/AmazonOffice/ratings_Office_Products.csv #../data/AmazonDigMusic/ratings_Digital_Music.csv  #../data/movielens_100k/u.data  #../data/movielens_1m/dataset.tsv
   splitting:
     test_splitting:
         strategy: random_subsampling
@@ -14,5 +14,10 @@ experiment:
   top_k: [10]
   evaluation:
     simple_metrics: [nDCG]
-
+    hyper_max_evals: 144 #168
+    hyper_opt_alg: grid
+    factors: [4, 8, 16, 32, 64, 128]  #[4, 8, 16, 32, 64, 128]
+    epochs: 100
+    lr: [0.001, 0.005, 0.01, 0.02]
+    ga: [0.6, 1, 1.6, 1.8, 2.4, 3.2]
 
