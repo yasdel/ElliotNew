@@ -2,7 +2,7 @@ experiment:
   dataset: movielens_100k
   data_config:
     strategy: dataset #fixed #train_path:test_path:
-    dataset_path:  ../data/AmazonOffice/ratings_Office_Products.csv #../data/AmazonDigMusic/ratings_Digital_Music.csv  #../data/movielens_100k/u.data  #../data/movielens_1m/dataset.tsv
+    dataset_path:  ../data/movielens_1m/dataset.tsv #../data/AmazonDigMusic/ratings_Digital_Music.csv  #../data/movielens_100k/u.data  #../data/movielens_1m/dataset.tsv
   splitting:
     test_splitting:
         strategy: random_subsampling
