@@ -20,7 +20,6 @@ from elliot.utils.write import store_recommendation
 
 np.random.seed(42)
 
-
 def power_iteration(A, num_simulations: int):
     b_k = np.random.rand(A.shape[1])
     for _ in range(num_simulations):
@@ -46,6 +45,8 @@ class MF(object):
         :param scale:
         :return:
         """
+
+        cnt_test =  0
         self._users = list(self._ratings.keys())
         self._items = list({k for a in self._ratings.values() for k in a.keys()})
         self._private_users = {p: u for p, u in enumerate(self._users)}
@@ -200,6 +201,7 @@ class BPRMF(RecMixin, BaseRecommenderModel):
         self._params_list = [
             ("_factors", "factors", "f", 10, int, None),
             ("_learning_rate", "lr", "lr", 0.05, None, None),
+            ("_hyper_max", "hyper_max_evals", "hyper_max_evals", 100, None, None),
             ("_gamma", "ga", "ga", 1, None, None),
             ("_bias_regularization", "bias_regularization", "bias_reg", 0, None, None),
             ("_user_regularization", "user_regularization", "u_reg", 0.0025,
@@ -290,8 +292,17 @@ class BPRMF(RecMixin, BaseRecommenderModel):
                 result_dict = self.evaluator.eval(recs)
                 self._results.append(result_dict)
 
-                rows = [it + 1, self.name , self._factors, self._learning_rate, self._gamma, sn1, sn2]
+                rows = [it + 1, self._factors, self._learning_rate, self._gamma, sn1, sn2]
+                rows.append(result_dict[5]['test_results']['nDCG'])
                 rows.append(result_dict[10]['test_results']['nDCG'])
+                rows.append(result_dict[20]['test_results']['nDCG'])
+                rows.append(result_dict[100]['test_results']['nDCG'])
+                rows.append(result_dict[5]['test_results']['HR'])
+                rows.append(result_dict[10]['test_results']['HR'])
+                rows.append(result_dict[20]['test_results']['HR'])
+                rows.append(result_dict[100]['test_results']['HR'])
+
+                print(rows)
 
                 with open('results/AML_Lyp/BPR_Lyapanov_ML1M_allepochs_allgamma' + '.csv',
                           'a') as f1:
@@ -301,10 +312,9 @@ class BPRMF(RecMixin, BaseRecommenderModel):
 
                 if it+1 == self._epochs:
 
-                    with open('results/AML_Lyp/AML_RecSys_Lyapanov_ML1M_finalepoch_allgamma' +'.csv', 'a') as f1:
+                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_ML1M_finalepoch_allgamma' +'.csv', 'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
-
 
 
                 if self._results[-1][self._validation_k]["val_results"][self._validation_metric] > best_metric_value:
