@@ -296,11 +296,9 @@ class BPRMF(RecMixin, BaseRecommenderModel):
                 rows.append(result_dict[5]['test_results']['nDCG'])
                 rows.append(result_dict[10]['test_results']['nDCG'])
                 rows.append(result_dict[20]['test_results']['nDCG'])
-                rows.append(result_dict[100]['test_results']['nDCG'])
                 rows.append(result_dict[5]['test_results']['HR'])
                 rows.append(result_dict[10]['test_results']['HR'])
                 rows.append(result_dict[20]['test_results']['HR'])
-                rows.append(result_dict[100]['test_results']['HR'])
 
                 print(rows)
 
