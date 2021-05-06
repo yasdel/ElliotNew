@@ -11,7 +11,7 @@ experiment:
   evaluation:
     cutoffs: [5,10,20,100]
     simple_metrics: [nDCG, HR]
-    relevance_threshold: 4
+    relevance_threshold: 1
 #  gpu: -1
   models:
     BPRMF:
