@@ -293,16 +293,12 @@ class BPRMF(RecMixin, BaseRecommenderModel):
                 self._results.append(result_dict)
 
                 rows = [it + 1, self._factors, self._learning_rate, self._gamma, sn1, sn2]
-                rows.append(result_dict[5]['test_results']['nDCG'])
-                rows.append(result_dict[10]['test_results']['nDCG'])
-                rows.append(result_dict[20]['test_results']['nDCG'])
                 rows.append(result_dict[5]['test_results']['HR'])
-                rows.append(result_dict[10]['test_results']['HR'])
                 rows.append(result_dict[20]['test_results']['HR'])
 
                 print(rows)
 
-                with open('results/AML_Lyp/BPR_Lyapanov_ML1M_allepochs_allgamma' + '.csv',
+                with open('results/AML_Lyp/BPR_Lyapanov_allepochs_allgamma' + '.csv',
                           'a') as f1:
                     writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                     writer.writerow(rows)
@@ -310,7 +306,7 @@ class BPRMF(RecMixin, BaseRecommenderModel):
 
                 if it+1 == self._epochs:
 
-                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_ML1M_finalepoch_allgamma' +'.csv', 'a') as f1:
+                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_finalepoch_allgamma' +'.csv', 'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
 
