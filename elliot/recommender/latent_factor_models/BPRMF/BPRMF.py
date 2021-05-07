@@ -298,15 +298,16 @@ class BPRMF(RecMixin, BaseRecommenderModel):
 
                 print(rows)
 
-                with open('results/AML_Lyp/BPR_Lyapanov_'+ 'ML1M'  + '_allepochs_allgamma' + '.csv',
-                          'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n')
-                    writer.writerow(rows)
+                if (it + 1) % 5 == 0:
+                    with open('results/AML_Lyp/BPR_Lyapanov_'+ 'ML1M' + '_every_five_epoch' + '.csv',
+                              'a') as f1:
+                        writer = csv.writer(f1, delimiter=',', lineterminator='\n')
+                        writer.writerow(rows)
 
 
                 if it+1 == self._epochs:
 
-                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_' + 'ML1M'  + '_finalepoch_allgamma' +'.csv', 'a') as f1:
+                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_' + 'ML1M'  + '_finalepoch' +'.csv', 'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
 
