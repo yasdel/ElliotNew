@@ -299,7 +299,7 @@ class BPRMF(RecMixin, BaseRecommenderModel):
                 print(rows)
 
                 if (it + 1) % 5 == 0:
-                    with open('results/AML_Lyp/BPR_Lyapanov_'+ 'Epinions' + '_every_five_epoch' + '.csv',
+                    with open('results/AML_Lyp/BPR_Lyapanov_'+ 'AmDigMusic' + '_every_five_epoch' + '.csv',
                               'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
@@ -307,7 +307,7 @@ class BPRMF(RecMixin, BaseRecommenderModel):
 
                 if it+1 == self._epochs:
 
-                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_' + 'Epinions'  + '_finalepoch' +'.csv', 'a') as f1:
+                    with open('results/AML_Lyp/BPR_RecSys_Lyapanov_' + 'AmDigMusic'  + '_finalepoch' +'.csv', 'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
 
