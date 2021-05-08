@@ -2,7 +2,7 @@ experiment:
   dataset: movielens_1m
   data_config:
     strategy: dataset
-    dataset_path: ../data/AmazonDigMusic/ratings_Digital_Music_deli_tab.csv #../data/movielens_1m/dataset.tsv # ../data/AmazonDigMusic/ratings_Digital_Music.csv   #../data/movielens_1m/dataset.tsv
+    dataset_path:  ../data/AmazonDigMusic/ratings_Digital_Music_deli_tab.csv #../data/Epinions/ratings_data_deli_tab.csv  #../data/AmazonDigMusic/ratings_Digital_Music_deli_tab.csv #../data/movielens_1m/dataset.tsv # ../data/AmazonDigMusic/ratings_Digital_Music.csv   #../data/movielens_1m/dataset.tsv
   splitting:
     test_splitting:
         strategy: random_subsampling
