@@ -23,7 +23,7 @@ experiment:
       epochs: 50
       batch_size: 64 #256
       factors: 50 #[quniform, 50, 100, 1]
-      lr: [loguniform, -2, -1]
+      lr: [0.01, 0.02, 0.05] #[loguniform, -2, -1]
       l_w: 0.0001
       l_b: 0.0001
       eps: [uniform, 0.1, 0.5] # Magnitude of the Perturbation

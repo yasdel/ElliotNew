@@ -93,7 +93,6 @@ class AMF(RecMixin, BaseRecommenderModel):
             ("_lyp_epoch", "lyp_epoch", "lyp_epoch", 1000, None, None),
             ("_adversarial_epochs", "adversarial_epochs", "adv_epochs", self._epochs//2, int, None)
         ]
-
         self.autoset_params()
 
         if self._adversarial_epochs > self._epochs:
@@ -160,11 +159,11 @@ class AMF(RecMixin, BaseRecommenderModel):
 
                 print(f'Epoch {(it + 1)}/{self._epochs} loss {loss  / steps:.3f}')
 
-                rows = [it + 1, self._factors, self._learning_rate, self._gamma, snval_I]
+                rows = [it + 1, self._factors, self._learning_rate, self._eps , self._l_w, self._l_b, self._l_adv, self._gamma, snval_I]
 
                 rows.append(result_dict[5]['test_results']['HR'])
                 rows.append(result_dict[20]['test_results']['HR'])
-
+                print(rows)
                 dsName = 'ML1M'
                 if (it + 1) % 5 == 1:
                     with open('results/AML_Lyp/APR_Lyapanov_'+ dsName + '_large_search' + '_every_five_epoch_update_after_50_advEpoch_' + str(self._adversarial_epochs) +'.csv',
