@@ -20,13 +20,14 @@ experiment:
       meta:
         save_recs: False
         hyper_opt_alg: grid
+        hyper_max_evals: 43
       epochs: 50
       batch_size: 64 #256
       factors: 50 #[quniform, 50, 100, 1]
       lr: [0.01, 0.02, 0.05] #[loguniform, -2, -1]
       l_w: 0.0001
       l_b: 0.0001
-      eps: [uniform, 0.1, 0.5] # Magnitude of the Perturbation
+      eps: 0.1  #[uniform, 0.1, 0.5] # Magnitude of the Perturbation
       l_adv: 1 # Adversarial Regularization Parameters
       adversarial_epochs: [0, 25] #0:BPR [0,5]: 0: BPR, last 5 epoch APR-MF #[quniform, 4, 8, 1] # Number of final epochs to be run [APR starts from (epochs - adversarial_epochs) epoch]
       lyp_epoch: 0
