@@ -13,14 +13,32 @@ experiment:
     simple_metrics: [HR]
     relevance_threshold: 4
 #  gpu: -1
-  models:
-    BPRMF:
-      meta:
-        hyper_opt_alg: grid
-      factors: [64]   #[4, 8, 16, 32, 64]  #[4, 8, 16, 32, 64, 128]
-      epochs: 100     #1000, 200
-      lr: [0.01, 0.02, 0.05]
-      ga: [1, 1.2, 1.3, 1.6, 2.4, 3.2, 4, 5, 6]
+  AMF:
+    meta:
+      save_recs: False
+      hyper_max_evals: 5
+      hyper_opt_alg: tpe
+    epochs: 10
+    batch_size: 64 #256
+    factors: 50 #[quniform, 50, 100, 1]
+    lr: [ loguniform, -2, -1 ]
+    l_w: 0.0001
+    l_b: 0.0001
+    eps: [ uniform, 0.1, 0.5 ] # Magnitude of the Perturbation
+    l_adv: 1 # Adversarial Regularization Parameters
+    adversarial_epochs: [0] #0:BPR [0,5]: 0: BPR, last 5 epoch APR-MF #[quniform, 4, 8, 1] # Number of final epochs to be run [APR starts from (epochs - adversarial_epochs) epoch]
+    lyp_epoch: 0  #
+    ga: [1, 1.2, 1.3, 1.6, 2.4, 3.2, 4]
+
+
+#  models:
+#    BPRMF:
+#      meta:
+#        hyper_opt_alg: grid
+#      factors: [64]   #[4, 8, 16, 32, 64]  #[4, 8, 16, 32, 64, 128]
+#      epochs: 100     #1000, 200
+#      lr: [0.01, 0.02, 0.05]
+#      ga: [1, 1.2, 1.3, 1.6, 2.4, 3.2, 4, 5, 6]
 
 #experiment:
 #  dataset: movielens_100k

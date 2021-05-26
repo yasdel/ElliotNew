@@ -17,6 +17,7 @@ from elliot.recommender.adversarial.AMF.AMF_model import AMF_model
 from elliot.recommender.base_recommender_model import init_charger
 from elliot.recommender.recommender_utils_mixin import RecMixin
 from elliot.utils.write import store_recommendation
+import tensorflow as tf
 
 np.random.seed(42)
 
@@ -87,7 +88,9 @@ class AMF(RecMixin, BaseRecommenderModel):
             ("_l_w", "l_w", "l_w", 0.1, None, None),
             ("_l_b", "l_b", "l_b", 0.001, None, None),
             ("_eps", "eps", "eps", 0.1, None, None),
+            ("_gamma", "ga", "ga", 1, None, None),
             ("_l_adv", "l_adv", "l_adv", 0.001, None, None),
+            ("_lyp_epoch", "lyp_epoch", "lyp_epoch", 1000, None, None),
             ("_adversarial_epochs", "adversarial_epochs", "adv_epochs", self._epochs//2, int, None)
         ]
 
@@ -119,14 +122,10 @@ class AMF(RecMixin, BaseRecommenderModel):
                + "_bs:" + str(self._batch_size) \
                + f"_{self.get_params_shortcut()}"
 
-    def get_user_factor_vector(self):
-        return self._Gu
 
-    def get_item_factor_vector(self):
-        return self._Gi
 
-    def scale_factors(self, v):
-        self._Gi /= v
+    #def scale_factors(self, v):
+    #    self._Gi /= v
 
     def train(self):
         if self._restore:
@@ -145,25 +144,15 @@ class AMF(RecMixin, BaseRecommenderModel):
                     t.set_postfix({'(APR)-loss' if user_adv_train else '(BPR)-loss': f'{loss.numpy() / steps:.5f}'})
                     t.update()
 
-            A = self._model.get_item_factor_vector()
-            C = np.matmul(A.transpose(), A)
-            # print(C.shape)
-            s1 = power_iteration(C, 20)
-            sn1 = np.sqrt(max(s1))
-            # print(sn1)
+            I_tf = self._model.get_item_factor_vector()
+            IT_tf = tf.transpose(I_tf)
+            I_IT_tf = tf.linalg.matmul(I_tf,IT_tf)
+            snval_I = np.sqrt(max(power_iteration(I_IT_tf,20)))
 
-            B = self._model.get_user_factor_vector()
-            D = np.matmul(B.transpose(), B)
-            # print(D.shape)
-            s2 = power_iteration(D, 20)
-            sn2 = np.sqrt(max(s2))
-            # print(sn2)
+            rho = max(snval_I/self._gamma, 1)
+            if it + 1 >= self._lyp_epoch:
+                self._model.update_item_factor_vector(rho)
 
-            rho = max(sn1 / self._gamma, 1)
-            # print(rho)
-
-            # print(self._model.get_item_factors(1))
-            self._model.scale_factors(rho)
             if not (it + 1) % self._validation_rate:
                 recs = self.get_recommendations(self.evaluator.get_needed_recommendations())
                 result_dict = self.evaluator.eval(recs)
@@ -171,16 +160,22 @@ class AMF(RecMixin, BaseRecommenderModel):
 
                 print(f'Epoch {(it + 1)}/{self._epochs} loss {loss  / steps:.3f}')
 
-                rows = [it + 1, self.name, self._factors, self._learning_rate, self._gamma, sn1, sn2]
-                rows.append(result_dict[10]['test_results']['nDCG'])
+                rows = [it + 1, self._factors, self._learning_rate, self._gamma, snval_I]
 
-                with open('results/AML_Lyp/APR_Lyapanov_ML_100k_allepochs_allgamma' + '.csv',
-                          'a') as f1:
-                    writer = csv.writer(f1, delimiter=',', lineterminator='\n')
-                    writer.writerow(rows)
+                rows.append(result_dict[5]['test_results']['HR'])
+                rows.append(result_dict[20]['test_results']['HR'])
 
-                if it + 1 == self._epochs:
-                    with open('results/AML_Lyp/APR_Lyapanov_ML_100k_finalepoch_allgamma' + '.csv', 'a') as f1:
+                dsName = 'ML1M'
+                if (it + 1) % 5 == 1:
+                    with open('results/AML_Lyp/APR_Lyapanov_'+ dsName + '_large_search' + '_every_five_epoch_update_after_50_advEpoch_' + str(self._adversarial_epochs) +'.csv',
+                              'a') as f1:
+                        writer = csv.writer(f1, delimiter=',', lineterminator='\n')
+                        writer.writerow(rows)
+
+
+                if it+1 == self._epochs:
+
+                    with open('results/AML_Lyp/APR_RecSys_Lyapanov_' + dsName + '_large_search'  + '_finalepoch_update_after_50_advEpoch_' + str(self._adversarial_epochs) +'.csv', 'a') as f1:
                         writer = csv.writer(f1, delimiter=',', lineterminator='\n')
                         writer.writerow(rows)
 
